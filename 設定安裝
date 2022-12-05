@@ -1,0 +1,36 @@
+1. tesseract install 
+pip install Pillow
+pip install pytesseract
+sudo add-apt-repository ppa:alex-p/tesseract-ocr-devel
+sudo apt install -y tesseract-ocr
+sudo apt update
+
+2. python readability
+pip3 install https://github.com/andreasvc/readability/tarball/master
+
+import readability
+text = ('This is an example sentence .\n'
+        'Note that tokens are separated by spaces and sentences by newlines .\n')
+results = readability.getmeasures(text, lang='en')
+print(results['readability grades']['FleschReadingEase'])
+
+OrderedDict([('readability grades', OrderedDict([('Kincaid', 7.442500000000003), ('ARI', 5.825624999999999), ('Coleman-Liau', 9.532550312500003), ('FleschReadingEase', 55.95250000000002), ('GunningFogIndex', 10.700000000000001), ('LIX', 39.25), ('SMOGIndex', 9.70820393249937), ('RIX', 2.5), ('DaleChallIndex', 9.954550000000001)])), ('sentence info', OrderedDict([('characters_per_word', 4.9375), ('syll_per_word', 1.6875), ('words_per_sentence', 8.0), ('sentences_per_paragraph', 2.0), ('type_token_ratio', 0.9375), ('characters', 79), ('syllables', 27), ('words', 16), ('wordtypes', 15), ('sentences', 2), ('paragraphs', 1), ('long_words', 5), ('complex_words', 3), ('complex_words_dc', 6)])), ('word usage', OrderedDict([('tobeverb', 2), ('auxverb', 0), ('conjunction', 1), ('pronoun', 2), ('preposition', 2), ('nominalization', 1)])), ('sentence beginnings', OrderedDict([('pronoun', 1), ('interrogative', 0), ('article', 0), ('subordination', 0), ('conjunction', 0), ('preposition', 0)]))])
+
+nlp 處理步驟 分詞 ＝> 前置處理 => 去除停用詞 ＝> 字詞出現次數統計
+
+3.NLTK
+(程式)
+pip install nltk 
+(詞庫)
+python3.8
+>>import nltk
+>>nltk.download() 
+l)List 
+>>nltk.download('all')  
+
+4. 清除 html tag
+pip3 install beautifulsoup4
+pip3 install html5lib     
+
+5. google news search
+pip3 install GoogleNews           
