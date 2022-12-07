@@ -8,6 +8,7 @@ import collections
 import string
 from bs4 import BeautifulSoup
 import urllib.request
+import matplotlib.pyplot as plt
 from GoogleNews import GoogleNews
 
 #圖片
@@ -15,8 +16,13 @@ from GoogleNews import GoogleNews
 #text = pytesseract.image_to_string(img, lang='eng')
 #print(text)
 
+#全域變數
+global type_list , key_word
+type_list = {}
+
 #搜尋Google News 關鍵字新聞
-googlenews_key_word = 'FIFA2022'
+googlenews_key_word = 'TSMC'
+key_word = googlenews_key_word
 googlenews = GoogleNews()
 googlenews.clear()
 googlenews.set_lang('en')
@@ -36,7 +42,7 @@ print(result[0]['title'])
 print(result[0]['link'])
 #描述
 print(result[0]['desc'].replace('\n', ''))
-#正文
+#正文摘要
 print(text[0].replace('\n', ''))
 # sum of news
 rows = len(result)
@@ -46,6 +52,30 @@ rows = len(result)
 print("sum of news = ", rows)
 sum_of_news = int(rows) 
 
+def model_prediction(text,num):
+	type_selection = int(num) % 4
+	
+	if(type_selection == 0):
+		type_prediction = 'A'
+	if(type_selection == 1):
+		type_prediction = 'B'
+	if(type_selection == 2):
+		type_prediction = 'C'
+	if(type_selection == 3):
+		type_prediction = 'D' 			
+	
+	return type_prediction
+
+def draw_PieChart(type_list , key_word):
+	print(type_list)
+	list_labels = list(type_list.keys())
+	values = list(type_list.values())
+	total = sum(type_list.values())
+	plt.title("Prediction " + key_word + " PieChart", {"fontsize" : 18})
+	plt.pie(values, labels=list_labels, autopct=lambda p: '{:.0f}%'.format(p * total / 100))
+	plt.legend(loc = "best")  
+	plt.show()
+	
 print("===== nltk =====")
 #移除停用符號
 #print("標點符號 : ",string.punctuation)
@@ -96,12 +126,23 @@ for num in range(sum_of_news):
 	    print(count)	
 
 	#title/desc/text/filtered_text/ 傳送至 訓練好的 model 判斷分類 (ToDo...)  
-	#send(title,desc,link,text,filtered_text)  
-
+	print("===== model_prediction =====")
+	type_prediction = model_prediction(text,num)
+	print("===== type in dict =====")
+	if type_prediction not in type_list.keys():
+		type_list[type_prediction] = 1
+	else:
+		count = type_list.get(type_prediction)
+		total_count = count + 1	
+		# dict = {string : int}
+		up_dict = {type_prediction:total_count} 
+		type_list.update(up_dict)
+		
 	#內文評分    
 	#results = readability.getmeasures(text, lang='en')
 	#print("readability grades")
 	#print("LIX grades: ",results['readability grades']['LIX'])
 	#print("Coleman-Liau grades: ",results['readability grades']['Coleman-Liau'])    
 
-
+#畫出分類圓餅圖
+draw_PieChart(type_list,key_word)
