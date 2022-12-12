@@ -33,4 +33,77 @@ pip3 install beautifulsoup4
 pip3 install html5lib     
 
 5. google news search
-pip3 install GoogleNews           
+pip3 install GoogleNews        
+
+6.  download dataSet
+Kaggle : News_Category_Dataset_v3.json
+
+7. JSON2CSV.py 
+json format trans to csv and format suitable for spark model
+
+8. upload train_data.csv google cloud HD
+
+9. train model on colab
+        1. Install Java 8 and NLU
+        
+                !wget https://setup.johnsnowlabs.com/nlu/colab.sh -O - | bash
+                
+
+        2.make train_set, test_set
+        
+                import nlu
+                import pandas as pd
+                test_path = '/content/drive/MyDrive/train_data.csv'
+                train_df = pd.read_csv(test_path,usecols = ['category','description'])
+                train_df.dropna(inplace=True)
+                train_df.columns=['y','text']
+
+                from sklearn.model_selection import train_test_split
+
+                train_df, test_df = train_test_split(train_df, test_size=0.2)
+                train_df
+
+        3.Train Deep Learning Classifier using nlu.load('train.classifier',gpu=True)
+        
+                fitted_pipe = nlu.load('train.classifier').fit(train_df)
+                preds = fitted_pipe.predict(train_df,output_level = 'document')
+                preds
+
+        4.Evaluate the model
+
+                from sklearn.metrics import classification_report
+                print(classification_report(preds['y'], preds['classifier_dl']))
+
+        5.different Sentence Emebddings  
+
+                fitted_pipe = nlu.load('en.embed_sentence.small_bert_L12_768 train.classifier',gpu=True).fit(train_df)
+                preds = fitted_pipe.predict(train_df,output_level='document')
+                print(classification_report(preds['y'], preds['classifier_dl']))
+
+        6.evaluate on Test Data
+
+                preds = fitted_pipe.predict(test_df,output_level='document')
+                preds.dropna(inplace=True)
+                print(classification_report(preds['y'], preds['classifier_dl']))
+
+        7.save the model
+
+                stored_model_path = './models/classifier_dl_trained' 
+                fitted_pipe.save(stored_model_path)  
+
+        8.load the model
+
+                hdd_pipe = nlu.load(path=stored_model_path)
+                preds = hdd_pipe.predict('Tesla plans to invest 10M into the ML sector')
+                preds
+                hdd_pipe.print_info()
+
+10. 本機安裝 nlp 套件
+        
+        pip3 install pyspark==3.3.0 
+        pip3 install spark-nlp==4.2.4                
+                
+
+
+
+
