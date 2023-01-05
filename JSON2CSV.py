@@ -1,7 +1,18 @@
 import pandas as pd
 import numpy as np
 import json
+import regex
 from sklearn.model_selection import train_test_split
+
+
+def clean_text(text):
+    text = regex.sub(r"@[A-Za-z0-9]+", ' ', text)
+    text = regex.sub(r"https?://[A-Za-z0-9./]+", ' ', text)
+    text = regex.sub(r"[^a-zA-z.!?'0-9]", ' ', text)
+    text = regex.sub('\t', ' ',  text)
+    text = regex.sub(r" +", ' ', text)
+    return text
+
 
 #大資料序需要一行一行讀進來
 file = open('News_Category_Dataset.json','r',encoding='utf8')
@@ -13,11 +24,25 @@ df = pd.json_normalize(data)
 df = df[['category','short_description']]
 df.to_csv('all_dataset.csv',header = ['category', 'description'])
 
+
+
 all_dataset_path = '/home/lenovo/DP/F_LAB/all_dataset.csv'
 data_df = pd.read_csv(all_dataset_path,usecols = ['category','description'])
-train_df, test_df = train_test_split(data_df, test_size=0.2)
-train_df.to_csv('kaggle_train_dataset.csv')
-test_df.to_csv('kaggle_test_dataset.csv')
+
+data_df.dropna(inplace=True)
+
+print("data_df size=",data_df.shape)
+
+train_df, test_df = train_test_split(data_df, train_size=120000,test_size=6000,random_state=42)
+
+train_df['category'] = train_df['category'].apply(clean_text) 
+test_df['category'] = test_df['category'].apply(clean_text)
+
+train_df.to_csv('kaggle_train_dataset_clear_text_120000.csv')
+test_df.to_csv('kaggle_test_dataset_clear_text_6000.csv')
+
+print("train_df size=",train_df.shape)
+print("test_df size=",test_df.shape)
 
 
 #train_df = pd.read_csv(test_path,usecols = (['category','description']))
