@@ -31,17 +31,24 @@ data_df = pd.read_csv(all_dataset_path,usecols = ['category','description'])
 
 data_df.dropna(inplace=True)
 
-print("data_df size=",data_df.shape)
+#print("data_df size=",data_df.shape)
 
-train_df, test_df = train_test_split(data_df, train_size=120000,test_size=6000,random_state=42)
+print("data_df size=",data_df.shape[0])
+
+train_df, tmp_test_df = train_test_split(data_df, train_size=120000,test_size=int(data_df.shape[0])-120000,random_state=42)
 
 train_df['category'] = train_df['category'].apply(clean_text) 
-test_df['category'] = test_df['category'].apply(clean_text)
+tmp_test_df['category'] = tmp_test_df['category'].apply(clean_text)
 
 train_df.to_csv('kaggle_train_dataset_clear_text_120000.csv')
+
+val_df, test_df = train_test_split(data_df, train_size=6000,test_size=6000,random_state=42)
+
+val_df.to_csv('kaggle_val_dataset_clear_text_6000.csv')
 test_df.to_csv('kaggle_test_dataset_clear_text_6000.csv')
 
 print("train_df size=",train_df.shape)
+print("val_df size=",val_df.shape)
 print("test_df size=",test_df.shape)
 
 
